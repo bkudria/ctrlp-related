@@ -86,12 +86,12 @@ function! ctrlp#related#init(bufnr)
 
 	let patterns = [ 
 				\ fname . ".*",
-				\	"*" . fname . ".*",
+				\ "*" . fname . ".*",
 				\ fname . "*.*"
 				\ ]
-	let find_patterns = map(copy(patterns), '"-name " . v:val')
+	let find_patterns = map(copy(patterns), '"-iname " . v:val')
 	let find_arg = join(find_patterns, ' -or ')
-	let flist = split(system('find . ' . find_arg ), "\n")
+	let flist = map(split(system('find . ' . find_arg ), "\n"), "fnamemodify(v:val, ':.')")
 	let foundInd = 0
 
 	" Remove the current file from the list
