@@ -90,8 +90,19 @@ function! ctrlp#related#init(bufnr)
 				\ fname . "*.*"
 				\ ]
 	let find_patterns = map(copy(patterns), '"-iname " . v:val')
-	let find_arg = join(find_patterns, ' -or ')
-	let flist = map(split(system('find . ' . find_arg ), "\n"), "fnamemodify(v:val, ':.')")
+	let find_pattern_arg = join(find_patterns, ' -or ')
+
+	if exists('g:ctrlp_custom_ignore') && !empty(g:ctrlp_custom_ignore) && !empty(g:ctrlp_custom_ignore)
+		let ignore_dirs = split(copy(g:ctrlp_custom_ignore.dir), '\\|')
+		let ignore_dirs_clean = map(ignore_dirs, 'substitute(v:val, "[\\$]", "", "g")')
+		let ignore_dirs_args = map(ignore_dirs_clean, '"-ipath *" . v:val . "/*"')
+		let find_ignore_dir_arg = join(ignore_dirs_args, ' -or ')
+	else
+		let find_ignore_dir_arg = ' -false '
+	endif
+
+	let find_cmd = 'find . \( ' . find_pattern_arg . ' \) -not \( ' . find_ignore_dir_arg . ' \)'
+	let flist = map(split(system(find_cmd), "\n"), "fnamemodify(v:val, ':.')")
 	let foundInd = 0
 
 	" Remove the current file from the list
