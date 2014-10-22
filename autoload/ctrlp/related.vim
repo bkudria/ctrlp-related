@@ -72,6 +72,8 @@ else
 	let g:ctrlp_ext_vars = [s:ext_vars]
 endif
 
+autocmd User CtrlPEnter call <SID>autoclose()
+
 " Provide a list of strings to search in
 "
 " Return: a Vim's List
@@ -166,6 +168,14 @@ function! ctrlp#related#id()
 	return s:id
 endfunction
 
+function! s:autoclose()
+  let nr = len(filter(getline(1, "$"), 'v:val =~ "^>"'))
+  if nr == 0
+    call feedkeys("\<esc>", "m")
+  elseif nr == 1
+    call feedkeys("\<cr>", "m")
+  endif
+endfunction
 
 " Create a command to directly call the new search type
 "
