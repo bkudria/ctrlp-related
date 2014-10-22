@@ -78,6 +78,7 @@ endif
 "
 function! ctrlp#related#init(bufnr)
 	let fname = s:getName(bufname(a:bufnr))
+	let fname = substitute(fname, '-\?test\c', "", "")
 
 	" If there's no file, just return empty list
 	if fname == ""
